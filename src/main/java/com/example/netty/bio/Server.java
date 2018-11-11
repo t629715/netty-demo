@@ -12,27 +12,37 @@ import java.net.Socket;
  */
 public class Server {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
-    //默认端口号
+    /**
+     * 默认的端口号
+     */
     private static final int DEFAULT_PORT = 7777;
-    //单例的serverSocket
+    /**
+     * 单例的serverSocket
+     */
     private static ServerSocket serverSocket;
-    //启动的方法
+
+    /**
+     * fetch
+     * @throws IOException
+     */
     public static void start() throws IOException {
         start(DEFAULT_PORT);
     }
 
     public synchronized static void start(int port) throws IOException{
-        if (serverSocket == null) return;
+        if (serverSocket != null) {
+            return;
+        }
         try{
-            serverSocket = new ServerSocket(DEFAULT_PORT);
-            logger.info("服务端已启动，端口号："+DEFAULT_PORT);
+            serverSocket = new ServerSocket(port);
+            System.out.println("服务端已启动，端口号："+DEFAULT_PORT);
             while(true){
                 Socket socket = serverSocket.accept();
                 new Thread(new ServerHandler(socket)).start();
             }
         }finally {
             if (serverSocket != null){
-                logger.info("服务端已关闭");
+                System.out.println("服务端已关闭");
                 serverSocket.close();
                 serverSocket = null;
             }

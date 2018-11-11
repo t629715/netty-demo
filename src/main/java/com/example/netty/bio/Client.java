@@ -9,35 +9,37 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-public class ServerHandler implements Runnable {
-    private Socket socket;
-    public ServerHandler(Socket socket) {
-        this.socket = socket;
+public class Client {
+    /**
+     * 服务端的端口号
+     */
+    private static int DEFAULT_SERVER_PORT = 7777;
+    /**
+     * 服务端的IP
+     */
+    private static String DEFAULT_SERVER_IP = "127.0.0.1";
 
+
+    public static void send(String expression){
+        send(DEFAULT_SERVER_PORT,expression);
     }
-    @Override
-    public void run() {
+
+    private static void send(int port, String expression) {
+        System.out.println("算术表达式为：{}"+expression);
+        Socket socket = null;
         BufferedReader in = null;
         PrintWriter out = null;
-        try{
+        try {
+            socket = new Socket(DEFAULT_SERVER_IP,port);
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out = new PrintWriter(socket.getOutputStream(),true);
-            String expression = null;
-            String result;
-            while (true){
-                if ((expression = in.readLine()) == null){
-                    break;
-                }
-                System.out.println("服务端收到信息：{}"+expression);
-                result = Calculator.cal(expression);
-                out.println(result);
-
-            }
-        }catch (Exception e){
+            out.println(expression);
+            System.out.println("_结果为：{}"+in.readLine());
+        } catch (IOException e) {
             e.printStackTrace();
-            System.out.println(e.getLocalizedMessage());
-        }finally {
-            if (in != null) {
+        }
+        finally {
+            if (in != null){
                 try {
                     in.close();
                 } catch (IOException e) {
@@ -52,14 +54,11 @@ public class ServerHandler implements Runnable {
             if (socket != null){
                 try {
                     socket.close();
-                    socket = null;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
+                socket = null;
             }
-
-
         }
     }
 }
