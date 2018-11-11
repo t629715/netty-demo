@@ -30,7 +30,7 @@ public class ServerHandler implements Runnable {
                     break;
                 }
                 logger.info("服务端收到信息：{}",expression);
-                result = Calcutor.cal(expression);
+                result = Calculator.cal(expression);
                 out.println(result);
 
             }
